@@ -1,0 +1,145 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+xsi:schemaLocation="http://www.springframework.org/schema/mvc
+			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+			http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+           >
+           
+<bean class ="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" >
+    <property name="messageConverters">  
+  <list>  
+   <ref bean="mappingJacksonHttpMessageConverter" /><!-- json转换器 -->  
+  </list>  
+</property>  
+</bean>      
+<bean id="mappingJacksonHttpMessageConverter" 
+class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />    
+
+<!-- Action注入 -->
+	<bean id="loginController" class="cn.edu.jsnu.action.LoginAction">
+		<property name="successView" value="main"></property>
+		<property name="failView" value="login"></property>
+	</bean>	
+	<bean id="shopResponse" class="cn.edu.jsnu.action.ShopAction"/>
+	<bean id="userResponse" class="cn.edu.jsnu.action.UserAction"/>
+	<bean id="drinkResponse" class="cn.edu.jsnu.action.DrinkAction"/>
+	<bean id="collectResponse" class="cn.edu.jsnu.action.CollectAction"/>
+	<bean id="orderResponse" class="cn.edu.jsnu.action.OrderAction"/>
+	<bean id="urlMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/login.do">loginController</prop>
+				<prop key="/adminlogin.do">loginController</prop>
+								
+				<prop key="/drinkManager.do">drinkResponse</prop>
+				<prop key="/insertDrink.do">drinkResponse</prop>
+				<prop key="/getDrinkType.do">drinkResponse</prop>
+				<prop key="/newdrinkmanager.do">drinkResponse</prop>
+				<prop key="/getDrinkByShop.do">drinkResponse</prop>
+				<prop key="/getDrinkBySearch.do">drinkResponse</prop>
+				<prop key="/getDrinkById.do">drinkResponse</prop>
+				<prop key="/editDrink.do">drinkResponse</prop>
+				<prop key="/updateDrink.do">drinkResponse</prop>
+				<prop key="/deleteDrink.do">drinkResponse</prop>
+				
+				<prop key="/shopManager.do">shopResponse</prop>
+				<prop key="/deleteShop.do">shopResponse</prop>
+				<prop key="/insertShop.do">shopResponse</prop>
+				<prop key="/editShop.do">shopResponse</prop>
+				<prop key="/updateShop.do">shopResponse</prop>
+				<prop key="/getAllShops.do">shopResponse</prop>
+				<prop key="/getAllShop.do">shopResponse</prop>
+				<prop key="/getShopById.do">shopResponse</prop>
+				 <prop key="/uploadFile.do">shopResponse</prop>
+								
+				
+				<prop key="/getUserById.do">userResponse</prop>
+				<prop key="/updateUserById.do">userResponse</prop>
+				<prop key="/userLogin.do">userResponse</prop>
+				<prop key="/getAllUsers.do">userResponse</prop>
+				<prop key="/userRegister.do">userResponse</prop>
+				<prop key="/userManager.do">userResponse</prop>
+				<prop key="/resetPassword.do">userResponse</prop>
+				
+				<prop key="/userCollectDrink.do">collectResponse</prop>
+				<prop key="/userCollectShop.do">collectResponse</prop>
+				<prop key="/isCollected.do">collectResponse</prop>
+				<prop key="/getAllUserCollection.do">collectResponse</prop>
+				
+				<prop key="/insertOrder.do">orderResponse</prop>
+				<prop key="/getAllUserOrder.do">orderResponse</prop>
+				<prop key="/getAllUserDrinkOrder.do">orderResponse</prop>
+				<prop key="/getAllUserComment.do">orderResponse</prop> 
+				<prop key="/insertComment.do">orderResponse</prop>
+				<prop key="/updateComment.do">orderResponse</prop>
+				<prop key="/deleteComment.do">orderResponse</prop>
+				<prop key="/orderManager.do">orderResponse</prop>
+				<prop key="/getAllOrder.do">orderResponse</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+	<!-- 获取配置文件 -->
+	<bean id="config"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:db-config.properties</value>
+			</list>
+		</property>
+	</bean>
+	<!-- 获取数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName">
+			<value>${db.dirverClass}</value>
+		</property>
+		<property name="url">
+			<value>${db.url}</value>
+		</property>
+		<property name="username">
+			<value>${db.username}</value>
+		</property>
+		<property name="password">
+			<value>${db.password}</value>
+		</property>
+	</bean>
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	  <!-- dao注入 -->  
+    <bean id="userService" class="cn.edu.jsnu.service.UserServiceImp">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>  
+    </bean>  
+    <bean id="shopService" class="cn.edu.jsnu.service.ShopServiceImp">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>  
+    </bean>
+    <bean id="foodService" class="cn.edu.jsnu.service.DrinkServiceImp">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>  
+    </bean>
+    <bean id="collectService" class="cn.edu.jsnu.service.CollectServiceImp">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>  
+    </bean> 
+     <bean id="orderService" class="cn.edu.jsnu.service.OrderServiceImp">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>  
+    </bean> 
+     <mvc:annotation-driven />  
+</beans>
+
